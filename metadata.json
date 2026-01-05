@@ -1,0 +1,7 @@
+{
+  "name": "凡人修仙",
+  "description": "沉浸式3D仙侠体验：通过手势实时操控飞剑，具备华丽的发光拖尾效果，支持自定义剑灵纹理。",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
