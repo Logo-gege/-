@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "^0.182.0",
-    "@react-three/fiber": "^9.4.2",
-    "@react-three/postprocessing": "^3.0.4",
+    "three": "0.182.0",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "@react-three/fiber": "9.0.0",
+    "@react-three/postprocessing": "2.16.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

@@ -42,7 +42,6 @@
       animation: pulse-soft 4s ease-in-out infinite;
     }
 
-    /* 3D 浮雕文字效果 */
     .text-3d-emboss {
       color: #2ecc71;
       text-shadow: 
@@ -61,13 +60,11 @@
       transform: scale(1.05);
     }
 
-    /* 水墨烟云 */
     .ink-cloud {
       filter: url(#turb-filter);
       opacity: 0.15;
     }
 
-    /* 八卦卦象样式 */
     .bagua-item {
       position: absolute;
       font-size: 2.5rem;
@@ -78,11 +75,13 @@
 <script type="importmap">
 {
   "imports": {
-    "three": "https://esm.sh/three@^0.182.0",
-    "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.4.2",
-    "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@^3.0.4",
+    "three": "https://esm.sh/three@0.182.0",
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@9.0.0?external=react,react-dom,three",
+    "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@2.16.0?external=react,react-dom,three",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }
 }
@@ -98,5 +97,7 @@
     </filter>
   </svg>
   <div id="root"></div>
+  <!-- 明确添加入口脚本，确保在 GitHub 环境下也能触发加载 -->
+  <script type="module" src="./index.tsx"></script>
 </body>
 </html>
