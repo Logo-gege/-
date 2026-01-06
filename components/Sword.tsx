@@ -1,8 +1,14 @@
-
 import React, { useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { SWORD_LERP_FACTOR, ORIENTATION_LERP_FACTOR, COLOR_JADE, COLOR_GOLD_THUNDER } from '../constants';
+import { SWORD_LERP_FACTOR, ORIENTATION_LERP_FACTOR, COLOR_JADE, COLOR_GOLD_THUNDER } from '../constants.ts';
+
+// Fix for JSX intrinsic element type errors
+const Group = 'group' as any;
+const Mesh = 'mesh' as any;
+const ShapeGeometry = 'shapeGeometry' as any;
+const MeshStandardMaterial = 'meshStandardMaterial' as any;
+const PlaneGeometry = 'planeGeometry' as any;
 
 interface SwordProps {
   targetPositionRef: React.MutableRefObject<THREE.Vector3>;
@@ -13,12 +19,10 @@ interface SwordProps {
 const Sword = forwardRef<THREE.Group, SwordProps>(({ targetPositionRef, targetRotationRef, textureUrl }, ref) => {
   const groupRef = useRef<THREE.Group>(null);
   const swordRef = useRef<THREE.Group>(null);
-  const shockwaveRef = useRef<THREE.Mesh>(null);
   const bladeMatRef = useRef<THREE.MeshStandardMaterial>(null);
   
   useImperativeHandle(ref, () => groupRef.current!);
 
-  // Pre-allocated math objects to avoid GC spikes
   const lastPos = useRef(new THREE.Vector3(0, 0, 0));
   const velocity = useMemo(() => new THREE.Vector3(), []);
   const lastHeading = useMemo(() => new THREE.Vector3(0, 1, 0), []);
@@ -48,7 +52,6 @@ const Sword = forwardRef<THREE.Group, SwordProps>(({ targetPositionRef, targetRo
     const targetPos = targetPositionRef.current;
     const currentPos = groupRef.current.position;
 
-    const distToTarget = currentPos.distanceTo(targetPos);
     const lerpVal = 1 - Math.pow(1 - SWORD_LERP_FACTOR, safeDelta * 120);
     currentPos.lerp(targetPos, lerpVal);
 
@@ -72,18 +75,10 @@ const Sword = forwardRef<THREE.Group, SwordProps>(({ targetPositionRef, targetRo
     const slerpFactor = 1 - Math.pow(1 - ORIENTATION_LERP_FACTOR, safeDelta * 120);
     groupRef.current.quaternion.slerp(targetQuaternion, slerpFactor);
 
-    if (shockwaveRef.current) {
-      const speedIntensity = THREE.MathUtils.clamp((speed - 0.1) * 2.0, 0, 1);
-      const waveScale = 1.0 + speedIntensity * 1.5;
-      shockwaveRef.current.scale.set(waveScale, waveScale, 1);
-      (shockwaveRef.current.material as THREE.MeshBasicMaterial).opacity = speedIntensity * 0.4;
-      shockwaveRef.current.rotation.z = time * 10;
-    }
-
     if (swordRef.current) {
       swordRef.current.position.y = Math.sin(time * 1.2) * 0.06;
       if (bladeMatRef.current) {
-        bladeMatRef.current.emissiveIntensity = 1.5 + Math.sin(time * 5) * 0.3 + speed * 0.5;
+        bladeMatRef.current.emissiveIntensity = 2.0 + Math.sin(time * 5) * 0.5 + speed * 0.8;
       }
     }
 
@@ -91,26 +86,18 @@ const Sword = forwardRef<THREE.Group, SwordProps>(({ targetPositionRef, targetRo
   });
 
   return (
-    <group ref={groupRef}>
-      <mesh ref={shockwaveRef} position={[0, 0.6, 0.05]} rotation={[-Math.PI/2, 0, 0]}>
-        <ringGeometry args={[0.2, 0.4, 32]} />
-        <meshBasicMaterial color="white" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
-      </mesh>
-      <group ref={swordRef}>
-        <mesh>
-          <shapeGeometry args={[bladeShape]} />
-          <meshStandardMaterial ref={bladeMatRef} color={COLOR_JADE} emissive={COLOR_JADE} emissiveIntensity={2} />
-        </mesh>
-        <mesh position={[0, 0, 0.01]}>
-           <planeGeometry args={[0.5, 0.1]} />
-           <meshStandardMaterial color={COLOR_GOLD_THUNDER} emissive={COLOR_GOLD_THUNDER} emissiveIntensity={2.5} />
-        </mesh>
-        <mesh position={[0, -0.3, 0]}>
-           <planeGeometry args={[0.08, 0.6]} />
-           <meshStandardMaterial color="#0a4c2a" emissive="#0a4c2a" emissiveIntensity={0.8} />
-        </mesh>
-      </group>
-    </group>
+    <Group ref={groupRef}>
+      <Group ref={swordRef}>
+        <Mesh>
+          <ShapeGeometry args={[bladeShape]} />
+          <MeshStandardMaterial ref={bladeMatRef} color={COLOR_JADE} emissive={COLOR_JADE} emissiveIntensity={2} />
+        </Mesh>
+        <Mesh position={[0, 0, 0.01]}>
+           <PlaneGeometry args={[0.5, 0.1]} />
+           <MeshStandardMaterial color={COLOR_GOLD_THUNDER} emissive={COLOR_GOLD_THUNDER} emissiveIntensity={2.5} />
+        </Mesh>
+      </Group>
+    </Group>
   );
 });
 

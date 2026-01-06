@@ -1,109 +1,55 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>手势御剑 - 指尖仙侠</title>
+  <title>凡人修仙 - 指尖御剑</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@300;400;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-  
-  <!-- 引入 Babel 浏览器端编译器，解决 GitHub 无法编译 .tsx 的问题 -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #000;
-      font-family: 'Noto+Serif+SC', 'Inter', sans-serif;
-    }
-    .font-cinzel { font-family: 'Cinzel', serif; }
-    .font-xianshi { font-family: 'Noto Serif SC', serif; }
+    body { margin: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    #root { width: 100vw; height: 100vh; position: relative; }
     .font-calligraphy { font-family: 'Ma Shan Zheng', cursive; }
-    
-    @keyframes spin-slow {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    .animate-spin-slow {
-      animation: spin-slow 25s linear infinite;
-    }
-    
-    @keyframes spin-reverse {
-      from { transform: rotate(360deg); }
-      to { transform: rotate(0deg); }
-    }
-    .animate-spin-reverse {
-      animation: spin-reverse 20s linear infinite;
-    }
-
-    @keyframes pulse-soft {
-      0%, 100% { opacity: 0.3; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(1.05); }
-    }
-    .animate-pulse-soft {
-      animation: pulse-soft 4s ease-in-out infinite;
-    }
-
+    .font-xianshi { font-family: 'Noto Serif SC', serif; }
     .text-3d-emboss {
       color: #2ecc71;
-      text-shadow: 
-        0 1px 0 #1b5e20,
-        0 2px 0 #1b5e20,
-        0 3px 0 #1b5e20,
-        0 4px 0 #1b5e20,
-        0 10px 30px rgba(46, 204, 113, 0.6),
-        0 0 100px rgba(46, 204, 113, 0.2);
-      transition: all 0.5s ease;
+      text-shadow: 0 1px 0 #1b5e20, 0 2px 0 #1b5e20, 0 10px 30px rgba(46, 204, 113, 0.6);
     }
-    .group:hover .text-3d-emboss {
-      text-shadow: 
-        0 0 20px rgba(46, 204, 113, 0.8),
-        0 0 50px rgba(46, 204, 113, 0.4);
-      transform: scale(1.05);
-    }
-
-    .ink-cloud {
-      filter: url(#turb-filter);
-      opacity: 0.15;
-    }
-
+    @keyframes pulse-soft { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
+    .animate-pulse-soft { animation: pulse-soft 4s ease-in-out infinite; }
+    .animate-spin-slow { animation: spin 20s linear infinite; }
+    .animate-spin-reverse { animation: spin-reverse 15s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spin-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+    
     .bagua-item {
       position: absolute;
-      font-size: 2.5rem;
-      color: rgba(46, 204, 113, 0.4);
-      user-select: none;
+      font-size: 2rem;
+      color: #2ecc71;
+      text-shadow: 0 0 10px #2ecc71;
     }
   </style>
 
 <script type="importmap">
 {
   "imports": {
-    "three": "https://esm.sh/three@0.182.0",
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "@react-three/fiber": "https://esm.sh/@react-three/fiber@9.0.0?external=react,react-dom,three",
-    "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@2.16.0?external=react,react-dom,three",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
+    "three": "https://esm.sh/three@0.152.2",
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.17.10?external=react,react-dom,three",
+    "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@2.16.2?external=react,react-dom,three",
+    "postprocessing": "https://esm.sh/postprocessing@6.33.3?external=three",
+    "@mediapipe/tasks-vision": "https://esm.sh/@mediapipe/tasks-vision@0.10.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }
 }
 </script>
 </head>
 <body>
-  <svg style="position: absolute; width: 0; height: 0;">
-    <filter id="turb-filter">
-      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed="2">
-        <animate attributeName="baseFrequency" dur="30s" values="0.015;0.02;0.015" repeatCount="indefinite" />
-      </feTurbulence>
-      <feDisplacementMap in="SourceGraphic" scale="50" />
-    </filter>
-  </svg>
   <div id="root"></div>
-
-  <!-- 使用 Babel 编译 TSX，并强制指定为 module 类型以配合 importmap -->
   <script type="text/babel" data-type="module" src="./index.tsx"></script>
 </body>
 </html>

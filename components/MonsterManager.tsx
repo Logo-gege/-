@@ -1,8 +1,12 @@
-
 import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { VIEW_WIDTH, VIEW_HEIGHT, MONSTER_COLLISION_RADIUS } from '../constants';
+
+// Fix for JSX intrinsic element type errors
+const Group = 'group' as any;
+const Mesh = 'mesh' as any;
+const Primitive = 'primitive' as any;
 
 interface Monster {
   id: number;
@@ -153,7 +157,7 @@ const MonsterManager: React.FC<MonsterManagerProps> = ({ swordPosRef, swordRotat
   };
 
   return (
-    <group>
+    <Group>
       {monsters.map(m => {
         const runtime = performance.now() / 1000;
         const timeSinceDeath = m.isDead ? runtime - m.deathTime : 0;
@@ -172,11 +176,11 @@ const MonsterManager: React.FC<MonsterManagerProps> = ({ swordPosRef, swordRotat
         const angle = Math.atan2(m.velocity.y, m.velocity.x);
 
         return (
-          <group key={m.id} position={[m.position.x, m.position.y, m.position.z]}>
+          <Group key={m.id} position={[m.position.x, m.position.y, m.position.z]}>
             
             {/* 灵力粒子流 (Death Particle Flow) */}
             {m.isDead && (
-              <group position={[0, config.height * m.scale, 0]}>
+              <Group position={[0, config.height * m.scale, 0]}>
                 {shardOffsets.map((shard, i) => {
                   // 非线性爆发：先快后慢
                   const t = deathProgress;
@@ -192,7 +196,7 @@ const MonsterManager: React.FC<MonsterManagerProps> = ({ swordPosRef, swordRotat
                   const shardScale = (0.04 + Math.random() * 0.08) * shardLife * m.scale;
                   
                   return (
-                    <mesh 
+                    <Mesh 
                       key={i} 
                       geometry={shardGeometry} 
                       position={[
@@ -207,17 +211,17 @@ const MonsterManager: React.FC<MonsterManagerProps> = ({ swordPosRef, swordRotat
                       ]}
                       scale={shardScale}
                     >
-                      <primitive object={shardMaterial} attach="material" opacity={shardLife} />
-                    </mesh>
+                      <Primitive object={shardMaterial} attach="material" opacity={shardLife} />
+                    </Mesh>
                   );
                 })}
-              </group>
+              </Group>
             )}
 
             {/* 妖兽主体：死亡时迅速缩并消失 */}
             {bodyVisibility > 0 && (
               <>
-                <group rotation={[0, 0, angle + Math.PI]}>
+                <Group rotation={[0, 0, angle + Math.PI]}>
                   {Array.from({ length: config.tailLength }).map((_, i) => {
                     const segmentFactor = (i + 1) / config.tailLength;
                     const wiggle = Math.sin(runtime * 8 - i * 0.8 + m.seed) * (0.1 + segmentFactor * 0.3);
@@ -225,72 +229,72 @@ const MonsterManager: React.FC<MonsterManagerProps> = ({ swordPosRef, swordRotat
                     const segmentSize = (0.7 - segmentFactor * 0.5) * m.scale * bodyScaleMult;
                     
                     return (
-                      <mesh key={i} position={[segmentX, wiggle, -0.1]} geometry={tailSegmentGeometry} scale={segmentSize}>
-                        <primitive object={bodyMaterial} attach="material" opacity={0.5 * (1 - segmentFactor) * opacityMult} />
-                      </mesh>
+                      <Mesh key={i} position={[segmentX, wiggle, -0.1]} geometry={tailSegmentGeometry} scale={segmentSize}>
+                        <Primitive object={bodyMaterial} attach="material" opacity={0.5 * (1 - segmentFactor) * opacityMult} />
+                      </Mesh>
                     );
                   })}
-                </group>
+                </Group>
 
-                <mesh 
+                <Mesh 
                   position={[0, config.height * m.scale, -0.2]} 
                   geometry={bodyGeometry} 
                   scale={[currentBodyScale, currentBodyScale, currentBodyScale * 0.8]}
                 >
-                  <primitive object={bodyMaterial} attach="material" opacity={0.8 * opacityMult} />
-                </mesh>
+                  <Primitive object={bodyMaterial} attach="material" opacity={0.8 * opacityMult} />
+                </Mesh>
 
                 {/* 牙齿 */}
-                <group position={[0, config.height * m.scale - 0.2 * m.scale, 0.35]} scale={bodyScaleMult}>
+                <Group position={[0, config.height * m.scale - 0.2 * m.scale, 0.35]} scale={bodyScaleMult}>
                   {[ -1.5, -0.5, 0.5, 1.5 ].map((pos, i) => (
-                    <mesh 
+                    <Mesh 
                       key={`ut-${i}`} 
                       geometry={toothGeometry} 
                       position={[pos * 0.08 * m.scale, 0.05 * m.scale, 0]} 
                       rotation={[Math.PI, 0, 0]}
                       scale={[0.8, 1.2, 0.8]}
                     >
-                      <primitive object={toothMaterial} attach="material" opacity={0.9 * opacityMult} />
-                    </mesh>
+                      <Primitive object={toothMaterial} attach="material" opacity={0.9 * opacityMult} />
+                    </Mesh>
                   ))}
                   {[ -1, 0, 1 ].map((pos, i) => (
-                    <mesh 
+                    <Mesh 
                       key={`lt-${i}`} 
                       geometry={toothGeometry} 
                       position={[pos * 0.09 * m.scale, -0.05 * m.scale, 0]} 
                       scale={[0.7, 1.0, 0.7]}
                     >
-                      <primitive object={toothMaterial} attach="material" opacity={0.9 * opacityMult} />
-                    </mesh>
+                      <Primitive object={toothMaterial} attach="material" opacity={0.9 * opacityMult} />
+                    </Mesh>
                   ))}
-                </group>
+                </Group>
 
                 {/* 眼睛 */}
-                <group position={[0, config.height * m.scale, 0.4]} scale={[bodyScaleMult, -bodyScaleMult, bodyScaleMult]}>
+                <Group position={[0, config.height * m.scale, 0.4]} scale={[bodyScaleMult, -bodyScaleMult, bodyScaleMult]}>
                   {[-1, 1].map((side, idx) => {
                     const sideX = (config.gap / 2) * side;
                     const slantRotation = config.slant * -side; 
                     const flicker = (Math.sin(runtime * 20 + m.seed + idx) * 0.15 + 0.85);
 
                     return (
-                      <mesh 
+                      <Mesh 
                         key={idx} 
                         geometry={eyeGeometry} 
                         position={[sideX, 0, 0]} 
                         rotation={[0, 0, slantRotation]}
                         scale={[config.size * 2.5, config.size * 1.2, 1]}
                       >
-                        <primitive object={eyeMaterial} attach="material" opacity={0.9 * flicker * opacityMult} />
-                      </mesh>
+                        <Primitive object={eyeMaterial} attach="material" opacity={0.9 * flicker * opacityMult} />
+                      </Mesh>
                     );
                   })}
-                </group>
+                </Group>
               </>
             )}
-          </group>
+          </Group>
         );
       })}
-    </group>
+    </Group>
   );
 };
 

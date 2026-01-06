@@ -1,5 +1,4 @@
-
-import { FilesetResolver, HandLandmarker } from 'https://esm.sh/@mediapipe/tasks-vision@0.10.0';
+import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 
 export class HandTrackingService {
   private handLandmarker: HandLandmarker | null = null;
@@ -20,7 +19,7 @@ export class HandTrackingService {
           delegate: "GPU"
         },
         runningMode: "VIDEO",
-        numHands: 2 // 支持双手检测
+        numHands: 2
       });
     } finally {
       this.isInitializing = false;

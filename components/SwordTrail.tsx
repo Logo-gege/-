@@ -1,8 +1,12 @@
-
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { TRAIL_LENGTH, TRAIL_PARTICLE_PER_STEP, COLOR_JADE } from '../constants';
+
+// Fix for JSX intrinsic element type errors
+const InstancedMesh = 'instancedMesh' as any;
+const CircleGeometry = 'circleGeometry' as any;
+const MeshBasicMaterial = 'meshBasicMaterial' as any;
 
 interface SwordTrailProps {
   swordGroupRef: React.RefObject<THREE.Group>;
@@ -102,16 +106,16 @@ const SwordTrail: React.FC<SwordTrailProps> = ({ swordGroupRef, color = COLOR_JA
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, TRAIL_LENGTH * TRAIL_PARTICLE_PER_STEP]}>
-      <circleGeometry args={[0.2, 8]} />
-      <meshBasicMaterial 
+    <InstancedMesh ref={meshRef} args={[undefined, undefined, TRAIL_LENGTH * TRAIL_PARTICLE_PER_STEP]}>
+      <CircleGeometry args={[0.2, 8]} />
+      <MeshBasicMaterial 
         color={color} 
         transparent 
         opacity={0.3}
         blending={THREE.AdditiveBlending} 
         depthWrite={false}
       />
-    </instancedMesh>
+    </InstancedMesh>
   );
 };
 

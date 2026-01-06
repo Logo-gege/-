@@ -1,8 +1,16 @@
-
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { VIEW_WIDTH, VIEW_HEIGHT, COLOR_JADE } from '../constants';
+
+// Fix for JSX intrinsic element type errors
+const Color = 'color' as any;
+const AmbientLight = 'ambientLight' as any;
+const Points = 'points' as any;
+const PointsMaterial = 'pointsMaterial' as any;
+const Mesh = 'mesh' as any;
+const PlaneGeometry = 'planeGeometry' as any;
+const MeshBasicMaterial = 'meshBasicMaterial' as any;
 
 const Environment: React.FC = () => {
   const starsRef = useRef<THREE.Points>(null);
@@ -83,11 +91,11 @@ const Environment: React.FC = () => {
 
   return (
     <>
-      <color attach="background" args={['#000305']} />
-      <ambientLight intensity={0.2} />
+      <Color attach="background" args={['#000305']} />
+      <AmbientLight intensity={0.2} />
 
-      <points ref={starsRef} geometry={starData}>
-        <pointsMaterial 
+      <Points ref={starsRef} geometry={starData}>
+        <PointsMaterial 
           color="#ffffff" 
           size={0.15} 
           sizeAttenuation={true} 
@@ -95,10 +103,10 @@ const Environment: React.FC = () => {
           opacity={0.6} 
           blending={THREE.AdditiveBlending}
         />
-      </points>
+      </Points>
 
-      <points ref={dustRef} geometry={dustData.geo}>
-        <pointsMaterial 
+      <Points ref={dustRef} geometry={dustData.geo}>
+        <PointsMaterial 
           color={COLOR_JADE} 
           size={0.25} 
           sizeAttenuation={true} 
@@ -107,12 +115,12 @@ const Environment: React.FC = () => {
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
-      </points>
+      </Points>
 
-      <mesh position={[0, -VIEW_HEIGHT / 2, -15]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[VIEW_WIDTH * 2, 20]} />
-        <meshBasicMaterial color="#000a08" transparent opacity={0.3} />
-      </mesh>
+      <Mesh position={[0, -VIEW_HEIGHT / 2, -15]} rotation={[-Math.PI / 2, 0, 0]}>
+        <PlaneGeometry args={[VIEW_WIDTH * 2, 20]} />
+        <MeshBasicMaterial color="#000a08" transparent opacity={0.3} />
+      </Mesh>
     </>
   );
 };
